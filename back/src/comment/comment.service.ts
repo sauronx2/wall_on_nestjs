@@ -11,10 +11,6 @@ export class CommentService {
     });
   }
 
-  async findAll() {
-    return this.prisma.comment.findMany();
-  }
-
   async findOne(id: number) {
     return this.prisma.comment.findUnique({
       where: { id },
