@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class CommentService {
     });
   }
 
-  async update(id: string, data: { text?: string; authorName?: string }) {
+  async update(id: string, data: any) {
     const commentExists = await this.prisma.comment.findUnique({
       where: {
         id: id,
@@ -26,6 +26,31 @@ export class CommentService {
 
     if (!commentExists) {
       throw new NotFoundException(`Comment with id ${id} not found`);
+    }
+
+    if (data.createdAt || data.updatedAt) {
+      throw new BadRequestException('Updating createdAt or updatedAt is not allowed');
+    }
+
+    return this.prisma.comment.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async patch(id: string, data: any) {
+    const commentExists = await this.prisma.comment.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!commentExists) {
+      throw new NotFoundException(`Comment with id ${id} not found`);
+    }
+
+    if (data.createdAt || data.updatedAt) {
+      throw new BadRequestException('Updating createdAt or updatedAt is not allowed');
     }
 
     return this.prisma.comment.update({

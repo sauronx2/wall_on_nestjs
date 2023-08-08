@@ -1,27 +1,33 @@
-import { IsNotEmpty, IsString, IsOptional, MaxLength } from 'class-validator';
+import { IsDefined, IsOptional, MaxLength } from 'class-validator';
+import { IsValidAuthorName } from 'src/validators/isValidAuthorName.validator';
 
 export class CreateCommentDTO {
-  @IsNotEmpty({ message: 'Text is required' })
-  @IsString({ message: 'Text must be a string' })
+  @IsDefined({ message: 'Text should not be null or undefined' })
   @MaxLength(500, { message: 'Text is too long' })
   text: string;
 
-  @IsNotEmpty({ message: 'Author name is required' })
-  @IsString({ message: 'Author name must be a string' })
-  @MaxLength(30, { message: 'Author name is too long' })
+  @IsValidAuthorName({ message: 'Author name is required, must be a string, and not too long' })
   authorName: string;
 }
 
 export class UpdateCommentDTO {
   id?: string;
 
+  @IsDefined({ groups: ['put'], message: 'Text should not be null or undefined' })
+  @MaxLength(500, { message: 'Text is too long', groups: ['put'] })
+  text?: string;
+
+  @IsDefined({ groups: ['put'], message: 'Author name should not be null or undefined' })
+  @IsValidAuthorName({ message: 'Author name is required, must be a string, and not too long', groups: ['put'] })
+  authorName?: string;
+}
+
+export class PatchCommentDTO {
   @IsOptional()
-  @IsString({ message: 'Text must be a string' })
   @MaxLength(500, { message: 'Text is too long' })
   text?: string;
 
   @IsOptional()
-  @IsString({ message: 'Author name must be a string' })
-  @MaxLength(30, { message: 'Author name is too long' })
+  @IsValidAuthorName({ message: 'Author name is required, must be a string, and not too long' })
   authorName?: string;
 }
